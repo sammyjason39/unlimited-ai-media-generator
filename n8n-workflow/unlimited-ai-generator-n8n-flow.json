@@ -1,0 +1,666 @@
+{
+    "name": "Unlimited AI Media Generator with WebApp Interface",
+    "nodes": [
+        {
+            "parameters": {
+                "resource": "image",
+                "modelId": {
+                    "__rl": true,
+                    "value": "models/gemini-3-pro-image-preview",
+                    "mode": "list",
+                    "cachedResultName": "models/gemini-3-pro-image-preview (Nano Banana Pro)"
+                },
+                "prompt": "=Generate {{ $json.body.prompt }}\nwith {{ $json.body.style }} style\nRatio (W X H): {{ $json.body.width }} X {{ $json.body.height }}",
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.googleGemini",
+            "typeVersion": 1.1,
+            "position": [
+                208,
+                0
+            ],
+            "id": "874d528b-3421-4944-bc9c-c2c5836168f3",
+            "name": "Generate an image",
+            "credentials": {
+                "googlePalmApi": {
+                    "id": "kufWA2ipNYSsWmHA",
+                    "name": "Google Gemini(PaLM) Api account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "respondWith": "binary",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.5,
+            "position": [
+                416,
+                0
+            ],
+            "id": "f644b787-ab10-4c99-908d-bfa99ece26f5",
+            "name": "Respond to Webhook"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "=You are an expert Songwriter specialized in prompting for **Suno AI (v5)**.\n\n### INPUT DATA\n- **Theme:** {{$json.body.theme}}\n- **Genre:** {{$json.body.genre}}\n- **Mood:** {{$json.body.mood}}\n- **Language Request:** {{$json.body.language}}\n- **Target Duration:** {{$json.body.duration}} seconds\n\n---\n\n### STEP 1: LANGUAGE LOGIC GATE\nCheck the **Language Request** and follow the matching path:\n\n**PATH A: IF \"Mix\" / \"Multilanguage\" (e.g., K-Pop)**\n   - **Strategy:** Mix **English** and the **Target Language** (e.g., Korean).\n   - **Script Rule:** Use **NATIVE SCRIPTS ONLY** (Hangul for Korean, Kanji for Japanese). \n   - **CONSTRAINT:** Do NOT include Romanization or pronunciation guides in brackets.\n     - *Bad:* `사랑해 (Saranghae)`\n     - *Good:* `사랑해`\n\n**PATH B: IF Specific Language**\n   - **Strategy:** Write entirely in that language using **NATIVE SCRIPTS**.\n   - *Indonesian:* Standard Bahasa Indonesia.\n   - *Chinese:* Hanzi.\n   - *Japanese:* Kanji/Hiragana/Katakana.\n\n---\n\n### STEP 2: DURATION LOGIC GATE (CRITICAL)\nYou must select the structure based on the **Target Duration** to ensure the song length fits.\n\n**OPTION 1: SHORT (< 60 Seconds)**\n   *Goal: A quick snippet or jingle.*\n   1. **[Intro]** (Instrumental tag only)\n   2. **[Verse]** (4 lines)\n   3. **[Chorus]** (4 lines)\n   4. **[Outro]** (Fade out)\n\n**OPTION 2: MEDIUM (60 - 120 Seconds)**\n   *Goal: A standard radio edit.*\n   1. **[Intro]** (Short)\n   2. **[Verse 1]** (4 lines)\n   3. **[Chorus]** (4-6 lines)\n   4. **[Verse 2]** (4 lines)\n   5. **[Chorus]** (Repeat Hook)\n   6. **[Outro]** (Fade out)\n\n**OPTION 3: LONG (> 120 Seconds)**\n   *Goal: A full length song.*\n   1. **[Intro]** (Mood setting)\n   2. **[Verse 1]** (4 lines)\n   3. **[Chorus]** (4-6 lines)\n   4. **[Verse 2]** (4 lines)\n   5. **[Chorus]** (Repeat Hook)\n   6. **[Bridge]** (Tempo change/High note, 4 lines)\n   7. **[Chorus]** (Final energetic drop)\n   8. **[Outro]** (Extended fade)\n\n---\n\n### SUNO FORMATTING RULES\n1. **METATAGS:** Use square brackets `[]` to guide the AI (e.g., `[Melodic Intro]`, `[Rap Verse]`, `[Guitar Solo]`).\n2. **NO LINE PREFIXES:** Do **NOT** put `[ko]`, `[id]`, or `[en]` at the start of lines.\n3. **NO MARKDOWN:** Do NOT use triple backticks (```).\n4. **NO PARENTHESES:** No `(pronunciation)` guides.\n\n### OUTPUT EXAMPLE (For \"Mix\" Input)\n[Intro]\n[Soft Piano Build]\n\n[Verse 1]\n차가운 바람이 불어와\nWalking down this lonely street again\n내 마음속에 비가 내려\nBut I can't find the words to say\n\n[Chorus]\nYou are my Starlight\n밤하늘 빛나는 별\nDon't let me go\n영원히 함께해\n\n[Outro]\n[Fade to Silence]\n\n### FINAL INSTRUCTION\nGenerate the lyrics now based on the **Language Path** and **Duration Option**. Output raw text only.",
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 3.1,
+            "position": [
+                208,
+                224
+            ],
+            "id": "80afec99-7d51-4f94-9237-f8d020f07327",
+            "name": "AI Agent"
+        },
+        {
+            "parameters": {
+                "modelName": "models/gemini-3-flash-preview",
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+            "typeVersion": 1,
+            "position": [
+                176,
+                448
+            ],
+            "id": "8d8efaa6-a321-425f-be4e-5cbb956188c4",
+            "name": "Google Gemini Chat Model",
+            "credentials": {
+                "googlePalmApi": {
+                    "id": "kufWA2ipNYSsWmHA",
+                    "name": "Google Gemini(PaLM) Api account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+            "typeVersion": 1,
+            "position": [
+                368,
+                448
+            ],
+            "id": "51938752-2544-483d-a445-f20c619bcfc1",
+            "name": "SerpAPI",
+            "credentials": {
+                "serpApi": {
+                    "id": "cCE42pXpCSTaDiM4",
+                    "name": "SerpAPI account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://api.sunoapi.org/api/v1/generate",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpBearerAuth",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={\n  \"customMode\": true,\n  \"instrumental\": false,\n  \"model\": \"V5\",\n  \"callBackUrl\": \"https://api.example.com/callback\",\n  \"prompt\": {{ $('Suno AI Webhook').item.json.body.lyrics.toJsonString() }},\n  \"style\": \"{{ $('Suno AI Webhook').item.json.body.genre }} {{ $('Suno AI Webhook').item.json.body.mood }}\",\n  \"title\": \"{{ $json.output }}\",\n  \"personaId\": \"persona_123\",\n  \"negativeTags\": \"Heavy Metal, Upbeat Drums\",\n  \"vocalGender\": \"m\",\n  \"styleWeight\": 0.65,\n  \"weirdnessConstraint\": 0.65,\n  \"audioWeight\": 0.65\n} ",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.3,
+            "position": [
+                576,
+                656
+            ],
+            "id": "cf2a9989-2c03-40e2-a2e2-0e746315b199",
+            "name": "HTTP Request",
+            "credentials": {
+                "httpBearerAuth": {
+                    "id": "Y4XQeHJR0A8yTIvC",
+                    "name": "SunoAPI"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "amount": 15
+            },
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1.1,
+            "position": [
+                784,
+                656
+            ],
+            "id": "998eaf76-22df-4ed7-b68e-f25a79121144",
+            "name": "Wait",
+            "webhookId": "501bf72f-5034-4433-8226-92cf0677c169"
+        },
+        {
+            "parameters": {
+                "url": "https://api.sunoapi.org/api/v1/generate/record-info",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpBearerAuth",
+                "sendQuery": true,
+                "queryParameters": {
+                    "parameters": [
+                        {
+                            "name": "taskId",
+                            "value": "={{ $('HTTP Request').item.json.data.taskId }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.3,
+            "position": [
+                992,
+                656
+            ],
+            "id": "f5e9d292-0077-45c5-a6f5-861ba4454eb9",
+            "name": "HTTP Request1",
+            "credentials": {
+                "httpBearerAuth": {
+                    "id": "Y4XQeHJR0A8yTIvC",
+                    "name": "SunoAPI"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 3
+                    },
+                    "conditions": [
+                        {
+                            "id": "c7d65ad3-e76e-40ce-80bd-8fb0526d3f55",
+                            "leftValue": "={{ $json.data.status }}",
+                            "rightValue": "SUCCESS",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.3,
+            "position": [
+                1200,
+                656
+            ],
+            "id": "8060e83f-2ea5-45d2-b4a6-e47ed876a72d",
+            "name": "If"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "=User Lyrics : {{ $json.body.lyrics }}",
+                "options": {
+                    "systemMessage": "You are a Top Tier Music Producer, given the lyrics generated by user, create a good sound catching TItle for the Song. Generate only one  best song title that you can generate without any additional infos or chat."
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 3.1,
+            "position": [
+                208,
+                656
+            ],
+            "id": "c36eb636-433d-43da-9278-693d0462a8b6",
+            "name": "AI Agent1"
+        },
+        {
+            "parameters": {
+                "modelName": "models/gemini-3-flash-preview",
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+            "typeVersion": 1,
+            "position": [
+                160,
+                864
+            ],
+            "id": "e4f84df7-0449-4d09-90e2-03be4c0364da",
+            "name": "Google Gemini Chat Model1",
+            "credentials": {
+                "googlePalmApi": {
+                    "id": "kufWA2ipNYSsWmHA",
+                    "name": "Google Gemini(PaLM) Api account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "34d4244b-1dd3-4218-9a46-6dec8b27fe0b",
+                "responseMode": "responseNode",
+                "options": {
+                    "rawBody": true
+                }
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                0,
+                0
+            ],
+            "id": "3c7d70a1-601e-4eac-9625-85303fe982f1",
+            "name": "Nano Banana Webhook",
+            "webhookId": "34d4244b-1dd3-4218-9a46-6dec8b27fe0b"
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "f7979f14-1595-4bbf-b183-e3c3c666ae53",
+                "responseMode": "responseNode",
+                "options": {
+                    "rawBody": true
+                }
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                0,
+                224
+            ],
+            "id": "312be3eb-7808-492a-853c-0394d11c5cb8",
+            "name": "Lyric Maker Webhook",
+            "webhookId": "f7979f14-1595-4bbf-b183-e3c3c666ae53"
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.5,
+            "position": [
+                560,
+                224
+            ],
+            "id": "1c0dde04-b7ea-4320-be0b-8cedec0cc39b",
+            "name": "Respond to Lyric Maker"
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "5b2a0cde-e177-44ed-9d58-f2abe2cc0dc4",
+                "responseMode": "responseNode",
+                "options": {
+                    "rawBody": true
+                }
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                0,
+                656
+            ],
+            "id": "3b41e8e6-0800-4b65-8014-1c70106b32b6",
+            "name": "Suno AI Webhook",
+            "webhookId": "5b2a0cde-e177-44ed-9d58-f2abe2cc0dc4"
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.5,
+            "position": [
+                1504,
+                640
+            ],
+            "id": "da17cafd-7b73-46a3-a8cf-3c6f3e68b1a4",
+            "name": "Respond to Suno AI Webhook"
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "5f16cf0e-7643-4061-bf43-42329d496b12",
+                "responseMode": "responseNode",
+                "options": {
+                    "rawBody": true
+                }
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                -48,
+                1088
+            ],
+            "id": "d8a9ae54-437d-4d96-a1a0-7cea0439faa5",
+            "name": "VEO 3 Webhook",
+            "webhookId": "5f16cf0e-7643-4061-bf43-42329d496b12"
+        },
+        {
+            "parameters": {
+                "respondWith": "binary",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.5,
+            "position": [
+                608,
+                1088
+            ],
+            "id": "c438bd26-821d-4089-8870-80d6ccc442fd",
+            "name": "Respond to Webhook1"
+        },
+        {
+            "parameters": {
+                "resource": "video",
+                "modelId": {
+                    "__rl": true,
+                    "value": "models/veo-3.1-fast-generate-preview",
+                    "mode": "list",
+                    "cachedResultName": "models/veo-3.1-fast-generate-preview"
+                },
+                "prompt": "={{ $json.body.prompt }}, {{ $json.body.style }} style",
+                "options": {
+                    "durationSeconds": "={{ $json.body.duration }}",
+                    "aspectRatio": "16:9"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.googleGemini",
+            "typeVersion": 1.1,
+            "position": [
+                400,
+                1008
+            ],
+            "id": "8b1523de-9d52-4a08-b5c0-e335ce1667ff",
+            "name": "Generate 16:9 Video",
+            "credentials": {
+                "googlePalmApi": {
+                    "id": "kufWA2ipNYSsWmHA",
+                    "name": "Google Gemini(PaLM) Api account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "resource": "video",
+                "modelId": {
+                    "__rl": true,
+                    "value": "models/veo-3.1-fast-generate-preview",
+                    "mode": "list",
+                    "cachedResultName": "models/veo-3.1-fast-generate-preview"
+                },
+                "prompt": "={{ $json.body.prompt }}, {{ $json.body.style }} style",
+                "options": {
+                    "durationSeconds": "={{ $json.body.duration }}",
+                    "aspectRatio": "9:16"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.googleGemini",
+            "typeVersion": 1.1,
+            "position": [
+                400,
+                1200
+            ],
+            "id": "832fe8bd-f413-4f86-9f97-2a0a28b57dc4",
+            "name": "Generate 9:16 Video",
+            "credentials": {
+                "googlePalmApi": {
+                    "id": "kufWA2ipNYSsWmHA",
+                    "name": "Google Gemini(PaLM) Api account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 3
+                    },
+                    "conditions": [
+                        {
+                            "id": "297aa55b-6d1d-4642-9401-551b2d2aac87",
+                            "leftValue": "={{ $json.body.ratio }}",
+                            "rightValue": "=16:9",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.3,
+            "position": [
+                176,
+                1088
+            ],
+            "id": "38de129f-6c5d-4b10-abcb-1d90aa42e591",
+            "name": "If1"
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "Generate an image": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Google Gemini Chat Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "SerpAPI": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Agent": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Lyric Maker",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "HTTP Request": {
+            "main": [
+                [
+                    {
+                        "node": "Wait",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Wait": {
+            "main": [
+                [
+                    {
+                        "node": "HTTP Request1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "HTTP Request1": {
+            "main": [
+                [
+                    {
+                        "node": "If",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "If": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Suno AI Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Wait",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Agent1": {
+            "main": [
+                [
+                    {
+                        "node": "HTTP Request",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Google Gemini Chat Model1": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "AI Agent1",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Nano Banana Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Generate an image",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Lyric Maker Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Suno AI Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "AI Agent1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "VEO 3 Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "If1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate 16:9 Video": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "If1": {
+            "main": [
+                [
+                    {
+                        "node": "Generate 16:9 Video",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Generate 9:16 Video",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate 9:16 Video": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1",
+        "availableInMCP": false
+    },
+    "versionId": "93e6d9fa-ff06-4893-a286-23dd1c837b37",
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "44a5d73b72b67f2d83eac9ac3aca0b5f60d063db0a7e1d2e8e58eec4445b657a"
+    },
+    "id": "QNYuGn1sGoCiT4ejWIzQ8",
+    "tags": []
+}
