@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered Image and Music Generator with modern interface">
+    <title>AI Studio | Image & Music Generator</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5z'/%3E%3Cpath d='M2 17l10 5 10-5'/%3E%3Cpath d='M2 12l10 5 10-5'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-gradient"></div>
+    <div class="bg-noise"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="logo-content">
+                    <span class="logo-text">AI Studio</span>
+                    <span class="logo-subtitle">Unlimited Media Generator</span>
+                </div>
+            </div>
+
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="image">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <path d="M21 15l-5-5L5 21"/>
+                    </svg>
+                    <span>Image</span>
+                </button>
+                <button class="nav-tab" data-tab="video">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="23 7 16 12 23 17 23 7"/>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                    </svg>
+                    <span>Video</span>
+                </button>
+                <button class="nav-tab" data-tab="music">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13"/>
+                        <circle cx="6" cy="18" r="3"/>
+                        <circle cx="18" cy="16" r="3"/>
+                    </svg>
+                    <span>Music</span>
+                </button>
+            </nav>
+
+            <div class="header-actions">
+                <button class="btn-icon" id="settingsBtn" aria-label="Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </button>
+                <button class="btn-icon" id="themeToggle" aria-label="Toggle theme">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Image Generator Tab -->
+            <section class="tab-content active" id="image-tab">
+                <div class="generator-layout">
+                    <div class="control-panel glass-card">
+                        <h2 class="panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                            Generate Image
+                        </h2>
+                        <p class="powered-by">🍌 Powered by nano Banana</p>
+
+                        <div class="form-group">
+                            <label for="imagePrompt">Describe your image</label>
+                            <textarea id="imagePrompt" class="input-textarea" placeholder="A majestic dragon flying over a neon-lit cyberpunk city at sunset..." rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Style</label>
+                            <div class="style-grid">
+                                <button class="style-btn active" data-style="realistic">🎨 Realistic</button>
+                                <button class="style-btn" data-style="anime">🌸 Anime</button>
+                                <button class="style-btn" data-style="digital">💻 Digital Art</button>
+                                <button class="style-btn" data-style="oil">🖼️ Oil Painting</button>
+                                <button class="style-btn" data-style="watercolor">💧 Watercolor</button>
+                                <button class="style-btn" data-style="3d">🎮 3D Render</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Aspect Ratio</label>
+                            <div class="ratio-options">
+                                <button class="ratio-btn" data-ratio="1:1">
+                                    <span class="ratio-preview square"></span>
+                                    1:1
+                                </button>
+                                <button class="ratio-btn active" data-ratio="16:9">
+                                    <span class="ratio-preview landscape"></span>
+                                    16:9
+                                </button>
+                                <button class="ratio-btn" data-ratio="9:16">
+                                    <span class="ratio-preview portrait"></span>
+                                    9:16
+                                </button>
+                            </div>
+                        </div>
+
+                        <button class="btn-primary btn-generate" id="generateImageBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                            <span>Generate Image</span>
+                            <div class="btn-loader"></div>
+                        </button>
+                    </div>
+
+                    <div class="output-panel glass-card">
+                        <div class="output-header">
+                            <h3>Generated Image</h3>
+                            <button class="btn-secondary btn-download" id="downloadImageBtn" disabled>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download
+                            </button>
+                        </div>
+                        <div class="output-content" id="imageOutput">
+                            <div class="placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <path d="M21 15l-5-5L5 21"/>
+                                </svg>
+                                <p>Your generated image will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Video Generator Tab -->
+            <section class="tab-content" id="video-tab">
+                <div class="generator-layout">
+                    <div class="control-panel glass-card">
+                        <h2 class="panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                            </svg>
+                            Generate Video
+                        </h2>
+                        <p class="powered-by">🎬 Powered by GoogleVEO</p>
+
+                        <div class="form-group">
+                            <label for="videoPrompt">Describe your video</label>
+                            <textarea id="videoPrompt" class="input-textarea" placeholder="A serene waterfall in a mystical forest with fireflies dancing at twilight..." rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Style</label>
+                            <div class="style-grid">
+                                <button class="style-btn active" data-video-style="cinematic">🎥 Cinematic</button>
+                                <button class="style-btn" data-video-style="anime">🌸 Anime</button>
+                                <button class="style-btn" data-video-style="realistic">🎨 Realistic</button>
+                                <button class="style-btn" data-video-style="abstract">🌀 Abstract</button>
+                                <button class="style-btn" data-video-style="vintage">📽️ Vintage</button>
+                                <button class="style-btn" data-video-style="3d">🎮 3D Animation</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Duration</label>
+                            <div class="duration-options">
+                                <button class="style-btn active" data-video-duration="4">4s</button>
+                                <button class="style-btn" data-video-duration="8">8s</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Aspect Ratio</label>
+                            <div class="ratio-options">
+                                <button class="ratio-btn active" data-video-ratio="16:9">
+                                    <span class="ratio-preview landscape"></span>
+                                    Landscape
+                                </button>
+                                <button class="ratio-btn" data-video-ratio="9:16">
+                                    <span class="ratio-preview portrait"></span>
+                                    Portrait
+                                </button>
+                            </div>
+                        </div>
+
+                        <button class="btn-primary btn-generate" id="generateVideoBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                            </svg>
+                            <span>Generate Video</span>
+                            <div class="btn-loader"></div>
+                        </button>
+                    </div>
+
+                    <div class="output-panel glass-card">
+                        <div class="output-header">
+                            <h3>Generated Video</h3>
+                            <button class="btn-secondary btn-download" id="downloadVideoBtn" disabled>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download
+                            </button>
+                        </div>
+                        <div class="output-content" id="videoOutput">
+                            <div class="placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <polygon points="23 7 16 12 23 17 23 7"/>
+                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                                </svg>
+                                <p>Your generated video will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Music Generator Tab -->
+            <section class="tab-content" id="music-tab">
+                <div class="generator-layout music-layout">
+                    <!-- Step 1: Lyrics -->
+                    <div class="control-panel glass-card" id="lyricsPanel">
+                        <div class="step-indicator">
+                            <span class="step-badge active">1</span>
+                            <span class="step-line"></span>
+                            <span class="step-badge">2</span>
+                        </div>
+                        
+                        <h2 class="panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                                <path d="M2 2l7.586 7.586"/>
+                                <circle cx="11" cy="11" r="2"/>
+                            </svg>
+                            Generate Lyrics
+                        </h2>
+
+                        <div class="form-group">
+                            <label for="musicTheme">Theme / Topic</label>
+                            <input type="text" id="musicTheme" class="input-text" placeholder="Lost love in a rainy city...">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="musicLanguage">Language</label>
+                            <select id="musicLanguage" class="input-select">
+                                <option value="id">🇮🇩 Indonesian</option>
+                                <option value="en">🇬🇧 English</option>
+                                <option value="jp">🇯🇵 Japanese</option>
+                                <option value="kr">🇰🇷 Korean</option>
+                                <option value="fr">🇫🇷 French</option>
+                                <option value="cn">🇨🇳 Chinese</option>
+                                <option value="mixed">🌍 Mixed Language</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="musicGenre">Genre</label>
+                                <select id="musicGenre" class="input-select">
+                                    <option value="pop">🎤 Pop</option>
+                                    <option value="rock">🎸 Rock</option>
+                                    <option value="electronic">🎧 Electronic</option>
+                                    <option value="jazz">🎷 Jazz</option>
+                                    <option value="classical">🎻 Classical</option>
+                                    <option value="hiphop">🎤 Hip-Hop</option>
+                                    <option value="rnb">💜 R&B</option>
+                                    <option value="country">🤠 Country</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="musicMood">Mood</label>
+                                <select id="musicMood" class="input-select">
+                                    <option value="energetic">⚡ Energetic</option>
+                                    <option value="calm">🌊 Calm</option>
+                                    <option value="dark">🌙 Dark</option>
+                                    <option value="uplifting">☀️ Uplifting</option>
+                                    <option value="romantic">💕 Romantic</option>
+                                    <option value="melancholic">🌧️ Melancholic</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="musicDuration">Duration: <span id="durationValue">60</span>s</label>
+                            <input type="range" id="musicDuration" class="input-range" min="30" max="240" value="60">
+                        </div>
+
+                        <button class="btn-primary btn-generate" id="generateLyricsBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                            </svg>
+                            <span>Generate Lyrics</span>
+                            <div class="btn-loader"></div>
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Music Generation -->
+                    <div class="control-panel glass-card" id="musicPanel">
+                        <h2 class="panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18V5l12-2v13"/>
+                                <circle cx="6" cy="18" r="3"/>
+                                <circle cx="18" cy="16" r="3"/>
+                            </svg>
+                            Generate Music
+                        </h2>
+                        <p class="powered-by">🎵 Powered by Suno.AI</p>
+                        <div class="lyrics-output" id="lyricsOutput">
+                            <label for="lyricsText">Generated Lyrics <span class="edit-hint">(editable)</span></label>
+                            <textarea id="lyricsText" class="input-textarea lyrics-textarea" placeholder="Your AI-generated lyrics will appear here..." rows="8"></textarea>
+                        </div>
+
+
+
+                        <button class="btn-primary btn-generate" id="generateMusicBtn" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18V5l12-2v13"/>
+                                <circle cx="6" cy="18" r="3"/>
+                                <circle cx="18" cy="16" r="3"/>
+                            </svg>
+                            <span>Generate Music</span>
+                            <div class="btn-loader"></div>
+                        </button>
+
+                        <div class="audio-output" id="audioOutput">
+                            <div class="music-result">
+                                <div class="album-cover-container" id="albumCoverContainer">
+                                    <img id="albumCover" src="" alt="Album Cover" class="album-cover">
+                                    <div class="album-info">
+                                        <h4 id="songTitle" class="song-title"></h4>
+                                        <p id="songTags" class="song-tags"></p>
+                                    </div>
+                                </div>
+                                <div class="audio-player">
+                                    <div class="waveform" id="waveform">
+                                        <div class="waveform-bars"></div>
+                                    </div>
+                                    <div class="audio-controls">
+                                        <button class="btn-play" id="playPauseBtn" disabled>
+                                            <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <polygon points="5 3 19 12 5 21 5 3"/>
+                                            </svg>
+                                            <svg class="pause-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <rect x="6" y="4" width="4" height="16"/>
+                                                <rect x="14" y="4" width="4" height="16"/>
+                                            </svg>
+                                        </button>
+                                        <div class="audio-time">
+                                            <span id="currentTime">0:00</span>
+                                            <span>/</span>
+                                            <span id="totalTime">0:00</span>
+                                        </div>
+                                        <button class="btn-secondary btn-download" id="downloadMusicBtn" disabled>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                                <polyline points="7 10 12 15 17 10"/>
+                                                <line x1="12" y1="15" x2="12" y2="3"/>
+                                            </svg>
+                                            Download
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h2>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                    </svg>
+                    Settings
+                </h2>
+                <button class="btn-icon modal-close" id="closeSettings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>Webhook Endpoints</h3>
+                    <p class="settings-description">Configure your n8n webhook URLs for AI generation</p>
+                    
+                    <div class="form-group">
+                        <label for="imageWebhook">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <path d="M21 15l-5-5L5 21"/>
+                            </svg>
+                            Image Generation Webhook
+                        </label>
+                        <input type="url" id="imageWebhook" class="input-text" placeholder="https://your-n8n-instance.com/webhook/image">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="videoWebhook">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="23 7 16 12 23 17 23 7"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                            </svg>
+                            Video Generation Webhook
+                        </label>
+                        <input type="url" id="videoWebhook" class="input-text" placeholder="https://your-n8n-instance.com/webhook/video">
+                    </div>
+                    <div class="form-group">
+                        <label for="lyricsWebhook">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                            </svg>
+                            Lyrics Generation Webhook
+                        </label>
+                        <input type="url" id="lyricsWebhook" class="input-text" placeholder="https://your-n8n-instance.com/webhook/lyrics">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="musicWebhook">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18V5l12-2v13"/>
+                                <circle cx="6" cy="18" r="3"/>
+                                <circle cx="18" cy="16" r="3"/>
+                            </svg>
+                            Music Generation Webhook
+                        </label>
+                        <input type="url" id="musicWebhook" class="input-text" placeholder="https://your-n8n-instance.com/webhook/music">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="testConnectionBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    Test Connection
+                </button>
+                <button class="btn-primary" id="saveSettingsBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+
+    <script src="app.js"></script>
+</body>
+</html>
