@@ -634,54 +634,69 @@ async function generateMusic() {
         });
         
         if (!response.ok) throw new Error('Generation failed');
-        
-        // Parse Suno API JSON response
-        const data = await response.json();
-        console.log('Suno API response:', data);
-        
-        // Handle array response format from Suno
-        let sunoResult;
-        if (Array.isArray(data) && data.length > 0) {
-            sunoResult = data[0];
+
+        const contentType = response.headers.get('Content-Type') || '';
+
+        if (contentType.includes('audio/') || contentType.includes('application/octet-stream')) {
+            // Binary audio response (e.g. ComfyUI MP3 output)
+            const arrayBuffer = await response.arrayBuffer();
+            console.log('Received binary audio:', arrayBuffer.byteLength, 'bytes');
+
+            const mimeType = contentType.includes('audio/') ? contentType.split(';')[0].trim() : 'audio/mpeg';
+            const audioBlob = new Blob([arrayBuffer], { type: mimeType });
+            state.music.audioBlob = audioBlob;
+            const audioUrl = URL.createObjectURL(audioBlob);
+
+            state.music.audioUrl = audioUrl;
+            state.music.title = 'Generated Music';
+
+            displayGeneratedMusic(audioUrl, { title: 'Generated Music' });
+            showToast('Music generated successfully!', 'success');
+
         } else {
-            sunoResult = data;
+            // JSON response (Suno API format)
+            const data = await response.json();
+            console.log('Suno API response:', data);
+
+            // Handle array response format from Suno
+            let sunoResult;
+            if (Array.isArray(data) && data.length > 0) {
+                sunoResult = data[0];
+            } else {
+                sunoResult = data;
+            }
+
+            // Extract the first generated track from sunoData
+            // Handle nested structure: data -> response -> sunoData
+            const sunoData = sunoResult?.data?.response?.sunoData || sunoResult?.data?.sunoData || sunoResult?.sunoData;
+
+            if (!sunoData || sunoData.length === 0) {
+                throw new Error('No music data in response');
+            }
+
+            const track = sunoData[0];
+            const audioUrl = track.sourceAudioUrl || track.audioUrl || track.streamAudioUrl;
+            const imageUrl = track.sourceImageUrl || track.imageUrl;
+            const title = track.title || 'Generated Music';
+            const tags = track.tags || '';
+            const duration = track.duration || 0;
+
+            if (!audioUrl) {
+                throw new Error('No audio URL in response');
+            }
+
+            console.log('Audio URL:', audioUrl);
+
+            state.music.audioUrl = audioUrl;
+            state.music.imageUrl = imageUrl;
+            state.music.title = title;
+            state.music.tags = tags;
+
+            displayGeneratedMusic(audioUrl, { imageUrl, title, tags, duration });
+            showToast('Music generated successfully!', 'success');
         }
         
-        // Extract the first generated track from sunoData
-        // Handle nested structure: data -> response -> sunoData
-        const sunoData = sunoResult?.data?.response?.sunoData || sunoResult?.data?.sunoData || sunoResult?.sunoData;
-        
-        if (!sunoData || sunoData.length === 0) {
-            throw new Error('No music data in response');
-        }
-        
-        // Get the first track (you can add track selection later)
-        const track = sunoData[0];
-        
-        // Extract URLs and metadata, prioritizing source URLs which are direct CDN links
-        const audioUrl = track.sourceAudioUrl || track.audioUrl || track.streamAudioUrl;
-        const imageUrl = track.sourceImageUrl || track.imageUrl;
-        const title = track.title || 'Generated Music';
-        const tags = track.tags || '';
-        const duration = track.duration || 0;
-        
-        if (!audioUrl) {
-            throw new Error('No audio URL in response');
-        }
-        
-        console.log('Audio URL:', audioUrl);
-        console.log('Image URL:', imageUrl);
-        console.log('Title:', title);
-        
-        // Store for download
-        state.music.audioUrl = audioUrl;
-        state.music.imageUrl = imageUrl;
-        state.music.title = title;
-        state.music.tags = tags;
-        
-        displayGeneratedMusic(audioUrl, { imageUrl, title, tags, duration });
-        showToast('Music generated successfully!', 'success');
-        
+>>>>>>> 5a70da4 (Fix music generation to handle binary MP3 response from n8n/ComfyUI)
     } catch (error) {
         console.error('Music generation error:', error);
         showToast('Failed to generate music. Please try again.', 'error');
