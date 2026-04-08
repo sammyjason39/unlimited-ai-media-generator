@@ -1316,3 +1316,32 @@ body {
         margin-top: var(--spacing-sm);
     }
 }
+
+/* ===== Nvidia Footer ===== */
+.nvidia-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: var(--spacing-md) 0 var(--spacing-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+}
+
+.nvidia-logo {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
+    /* Invert logo in dark mode so it's visible on dark backgrounds */
+    filter: brightness(0) invert(1);
+    opacity: 0.6;
+}
+
+[data-theme="light"] .nvidia-logo {
+    filter: none;
+    opacity: 0.75;
+}
+}
