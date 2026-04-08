@@ -695,8 +695,7 @@ async function generateMusic() {
             displayGeneratedMusic(audioUrl, { imageUrl, title, tags, duration });
             showToast('Music generated successfully!', 'success');
         }
-        
->>>>>>> 5a70da4 (Fix music generation to handle binary MP3 response from n8n/ComfyUI)
+
     } catch (error) {
         console.error('Music generation error:', error);
         showToast('Failed to generate music. Please try again.', 'error');
