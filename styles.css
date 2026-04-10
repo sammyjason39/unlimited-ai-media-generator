@@ -1,6 +1,6 @@
 /* ============================================
    AI STUDIO - Design System & Styles
-   Modern Glassmorphism UI with Dark/Light Theme
+   NVIDIA Neon Green Dark Theme
    ============================================ */
 
 /* ===== CSS Variables / Theme Tokens ===== */
@@ -32,65 +32,65 @@
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
-    --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.3);
+    --shadow-glow: 0 0 40px rgba(118, 185, 0, 0.4);
 }
 
 /* Dark Theme (Default) */
 [data-theme="dark"] {
-    --bg-primary: #0a0a0f;
-    --bg-secondary: #12121a;
-    --bg-tertiary: #1a1a25;
-    --bg-glass: rgba(255, 255, 255, 0.03);
-    --bg-glass-hover: rgba(255, 255, 255, 0.06);
-    --border-glass: rgba(255, 255, 255, 0.08);
-    --border-glass-hover: rgba(255, 255, 255, 0.15);
+    --bg-primary: #080b08;
+    --bg-secondary: #0d110d;
+    --bg-tertiary: #111811;
+    --bg-glass: rgba(118, 185, 0, 0.03);
+    --bg-glass-hover: rgba(118, 185, 0, 0.07);
+    --border-glass: rgba(118, 185, 0, 0.12);
+    --border-glass-hover: rgba(118, 185, 0, 0.28);
 
-    --text-primary: #ffffff;
-    --text-secondary: rgba(255, 255, 255, 0.7);
-    --text-tertiary: rgba(255, 255, 255, 0.5);
-    --text-muted: rgba(255, 255, 255, 0.3);
+    --text-primary: #e8ffe8;
+    --text-secondary: rgba(232, 255, 232, 0.72);
+    --text-tertiary: rgba(232, 255, 232, 0.5);
+    --text-muted: rgba(232, 255, 232, 0.3);
 
-    --accent-primary: #8b5cf6;
-    --accent-secondary: #6366f1;
-    --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
-    --accent-glow: rgba(139, 92, 246, 0.4);
+    --accent-primary: #76b900;
+    --accent-secondary: #5a8f00;
+    --accent-gradient: linear-gradient(135deg, #a3e635 0%, #76b900 50%, #4a7a00 100%);
+    --accent-glow: rgba(118, 185, 0, 0.5);
 
-    --success: #10b981;
+    --success: #22c55e;
     --warning: #f59e0b;
     --error: #ef4444;
 
-    --input-bg: rgba(255, 255, 255, 0.05);
-    --input-border: rgba(255, 255, 255, 0.1);
-    --input-focus: rgba(139, 92, 246, 0.5);
+    --input-bg: rgba(118, 185, 0, 0.05);
+    --input-border: rgba(118, 185, 0, 0.15);
+    --input-focus: rgba(118, 185, 0, 0.4);
 }
 
 /* Light Theme */
 [data-theme="light"] {
-    --bg-primary: #f8fafc;
+    --bg-primary: #f0f4f0;
     --bg-secondary: #ffffff;
-    --bg-tertiary: #f1f5f9;
-    --bg-glass: rgba(255, 255, 255, 0.7);
-    --bg-glass-hover: rgba(255, 255, 255, 0.85);
-    --border-glass: rgba(0, 0, 0, 0.08);
-    --border-glass-hover: rgba(0, 0, 0, 0.15);
+    --bg-tertiary: #e8f0e8;
+    --bg-glass: rgba(255, 255, 255, 0.75);
+    --bg-glass-hover: rgba(255, 255, 255, 0.88);
+    --border-glass: rgba(76, 120, 0, 0.12);
+    --border-glass-hover: rgba(76, 120, 0, 0.25);
 
-    --text-primary: #0f172a;
-    --text-secondary: rgba(15, 23, 42, 0.7);
-    --text-tertiary: rgba(15, 23, 42, 0.5);
-    --text-muted: rgba(15, 23, 42, 0.3);
+    --text-primary: #0a1a00;
+    --text-secondary: rgba(10, 26, 0, 0.7);
+    --text-tertiary: rgba(10, 26, 0, 0.5);
+    --text-muted: rgba(10, 26, 0, 0.35);
 
-    --accent-primary: #7c3aed;
-    --accent-secondary: #4f46e5;
-    --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #2563eb 100%);
-    --accent-glow: rgba(124, 58, 237, 0.3);
+    --accent-primary: #5a8f00;
+    --accent-secondary: #3d6200;
+    --accent-gradient: linear-gradient(135deg, #76b900 0%, #5a8f00 50%, #3d6200 100%);
+    --accent-glow: rgba(90, 143, 0, 0.35);
 
-    --success: #059669;
+    --success: #16a34a;
     --warning: #d97706;
     --error: #dc2626;
 
-    --input-bg: rgba(0, 0, 0, 0.03);
-    --input-border: rgba(0, 0, 0, 0.1);
-    --input-focus: rgba(124, 58, 237, 0.5);
+    --input-bg: rgba(118, 185, 0, 0.06);
+    --input-border: rgba(118, 185, 0, 0.18);
+    --input-focus: rgba(118, 185, 0, 0.45);
 }
 
 /* ===== Reset & Base ===== */
@@ -218,17 +218,26 @@ body {
 .logo-icon {
     width: 40px;
     height: 40px;
-    background: var(--accent-gradient);
+    background: #000000;
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
+    border: 1px solid rgba(118, 185, 0, 0.3);
 }
 
 .logo-icon svg {
     width: 24px;
     height: 24px;
+}
+
+.logo-icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 5px;
+    border-radius: inherit;
 }
 
 .logo-content {
@@ -504,7 +513,7 @@ body {
     cursor: pointer;
     appearance: none;
     background-color: var(--input-bg);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2376b900' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
     background-size: 16px;
@@ -512,8 +521,8 @@ body {
 }
 
 .input-select option {
-    background-color: rgba(20, 20, 25, 0.95);
-    color: #fff;
+    background-color: rgba(8, 14, 8, 0.97);
+    color: #e8ffe8;
     padding: 10px;
 }
 
@@ -990,7 +999,7 @@ body {
 
 .waveform {
     height: 80px;
-    background: linear-gradient(180deg, transparent 0%, rgba(139, 92, 246, 0.1) 100%);
+    background: linear-gradient(180deg, transparent 0%, rgba(118, 185, 0, 0.12) 100%);
     border-radius: var(--radius-md);
     margin-bottom: var(--spacing-md);
     display: flex;
