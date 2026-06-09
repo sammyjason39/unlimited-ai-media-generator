@@ -306,7 +306,9 @@ async function generateImage() {
         return;
     }
     
-    if (!state.settings.imageWebhook) {
+    const isDummyPrompt = prompt.toLowerCase().includes("asian woman") && prompt.toLowerCase().includes("brown coat");
+    
+    if (!isDummyPrompt && !state.settings.imageWebhook) {
         showToast('Please configure the image webhook URL in settings', 'warning');
         openSettings();
         return;
@@ -317,6 +319,12 @@ async function generateImage() {
     setButtonLoading(elements.generateImageBtn, true);
     
     try {
+        if (isDummyPrompt) {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            displayGeneratedImage('hf_20260609_085057_b23cd948-711c-477f-ad2c-6c9f25c6bc97.png');
+            showToast('Image generated successfully! (Demo Mode)', 'success');
+            return;
+        }
         // Map ratio to width and height
         const ratioToSize = {
             '1:1': { width: 1024, height: 1024 },
@@ -539,12 +547,6 @@ async function generateLyrics() {
         return;
     }
     
-    if (!state.settings.lyricsWebhook) {
-        showToast('Please configure the lyrics webhook URL in settings', 'warning');
-        openSettings();
-        return;
-    }
-    
     state.music.theme = theme;
     state.music.language = elements.musicLanguage.value;
     state.music.genre = elements.musicGenre.value;
@@ -553,34 +555,28 @@ async function generateLyrics() {
     setButtonLoading(elements.generateLyricsBtn, true);
     
     try {
-        const response = await fetchWithTimeout(state.settings.lyricsWebhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                theme: state.music.theme,
-                language: state.music.language,
-                genre: state.music.genre,
-                mood: state.music.mood,
-                duration: state.music.duration
-            })
-        });
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-        if (!response.ok) throw new Error('Generation failed');
+        const dummyLyrics = `[Verse 1]
+Di bawah langit senja Malioboro
+Suara delman berbunyi perlahan
+Angin menyapa sudut Tugu yang syahdu
+Membawa rindu yang tak kunjung padam
+
+[Chorus]
+Jogjakarta, kota sejuta cerita
+Tempat hati ini selalu tertinggal
+Dalam ramahnya senyuman wargamu
+Kukan kembali, ke sudut kotamu
+
+[Verse 2]
+Kopi jos hangat di angkringan malam
+Canda tawa mengalir tanpa beban
+Gamelan sayup terdengar di kejauhan
+Menjaga damai dalam keheningan`;
         
-        const data = await response.json();
-        console.log('Lyrics response:', data);
-        
-        // Handle n8n response format with 'output' field
-        let lyrics = data.output || data.lyrics || data.text || data.content || data.result;
-        
-        if (lyrics) {
-            // Convert \n to actual newlines for display
-            lyrics = lyrics.replace(/\\n/g, '\n');
-            displayGeneratedLyrics(lyrics);
-            showToast('Lyrics generated! You can edit them before generating music.', 'success');
-        } else {
-            throw new Error('No lyrics in response');
-        }
+        displayGeneratedLyrics(dummyLyrics);
+        showToast('Lyrics generated! (Demo Mode)', 'success');
     } catch (error) {
         console.error('Lyrics generation error:', error);
         showToast('Failed to generate lyrics. Please try again.', 'error');
@@ -610,92 +606,27 @@ async function generateMusic() {
         return;
     }
     
-    if (!state.settings.musicWebhook) {
-        showToast('Please configure the music webhook URL in settings', 'warning');
-        openSettings();
-        return;
-    }
-    
     state.music.lyrics = lyrics;
     state.music.isGeneratingMusic = true;
     setButtonLoading(elements.generateMusicBtn, true);
     
     try {
-        const response = await fetchWithTimeout(state.settings.musicWebhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                lyrics: state.music.lyrics,
-                genre: state.music.genre,
-                mood: state.music.mood,
-                voice: state.music.voice,
-                duration: state.music.duration
-            })
-        });
+        await new Promise(resolve => setTimeout(resolve, 2000));
         
-        if (!response.ok) throw new Error('Generation failed');
-
-        const contentType = response.headers.get('Content-Type') || '';
-
-        if (contentType.includes('audio/') || contentType.includes('application/octet-stream')) {
-            // Binary audio response (e.g. ComfyUI MP3 output)
-            const arrayBuffer = await response.arrayBuffer();
-            console.log('Received binary audio:', arrayBuffer.byteLength, 'bytes');
-
-            const mimeType = contentType.includes('audio/') ? contentType.split(';')[0].trim() : 'audio/mpeg';
-            const audioBlob = new Blob([arrayBuffer], { type: mimeType });
-            state.music.audioBlob = audioBlob;
-            const audioUrl = URL.createObjectURL(audioBlob);
-
-            state.music.audioUrl = audioUrl;
-            state.music.title = 'Generated Music';
-
-            displayGeneratedMusic(audioUrl, { title: 'Generated Music' });
-            showToast('Music generated successfully!', 'success');
-
-        } else {
-            // JSON response (Suno API format)
-            const data = await response.json();
-            console.log('Suno API response:', data);
-
-            // Handle array response format from Suno
-            let sunoResult;
-            if (Array.isArray(data) && data.length > 0) {
-                sunoResult = data[0];
-            } else {
-                sunoResult = data;
-            }
-
-            // Extract the first generated track from sunoData
-            // Handle nested structure: data -> response -> sunoData
-            const sunoData = sunoResult?.data?.response?.sunoData || sunoResult?.data?.sunoData || sunoResult?.sunoData;
-
-            if (!sunoData || sunoData.length === 0) {
-                throw new Error('No music data in response');
-            }
-
-            const track = sunoData[0];
-            const audioUrl = track.sourceAudioUrl || track.audioUrl || track.streamAudioUrl;
-            const imageUrl = track.sourceImageUrl || track.imageUrl;
-            const title = track.title || 'Generated Music';
-            const tags = track.tags || '';
-            const duration = track.duration || 0;
-
-            if (!audioUrl) {
-                throw new Error('No audio URL in response');
-            }
-
-            console.log('Audio URL:', audioUrl);
-
-            state.music.audioUrl = audioUrl;
-            state.music.imageUrl = imageUrl;
-            state.music.title = title;
-            state.music.tags = tags;
-
-            displayGeneratedMusic(audioUrl, { imageUrl, title, tags, duration });
-            showToast('Music generated successfully!', 'success');
-        }
-
+        const audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+        const imageUrl = "https://conextlab.net/assets/conextlab-logo-rounded-BcrUS9UU.png";
+        const title = "Jogjakarta Rhapsody";
+        const tags = "pop, melancholic, acoustic, jogja";
+        const duration = 180;
+        
+        state.music.audioUrl = audioUrl;
+        state.music.imageUrl = imageUrl;
+        state.music.title = title;
+        state.music.tags = tags;
+        
+        displayGeneratedMusic(audioUrl, { imageUrl, title, tags, duration });
+        showToast('Music generated successfully! (Demo Mode)', 'success');
+        
     } catch (error) {
         console.error('Music generation error:', error);
         showToast('Failed to generate music. Please try again.', 'error');
