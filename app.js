@@ -547,6 +547,12 @@ async function generateLyrics() {
         return;
     }
     
+    if (!state.settings.lyricsWebhook) {
+        showToast('Please configure the lyrics webhook URL in settings', 'warning');
+        openSettings();
+        return;
+    }
+    
     state.music.theme = theme;
     state.music.language = elements.musicLanguage.value;
     state.music.genre = elements.musicGenre.value;
@@ -555,31 +561,44 @@ async function generateLyrics() {
     setButtonLoading(elements.generateLyricsBtn, true);
     
     try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        const response = await fetchWithTimeout(state.settings.lyricsWebhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                theme: state.music.theme,
+                language: state.music.language,
+                genre: state.music.genre,
+                mood: state.music.mood,
+                duration: state.music.duration
+            })
+        });
         
-        const dummyLyrics = `[Verse 1]
-Di bawah langit senja Malioboro
-Suara delman berbunyi perlahan
-Angin menyapa sudut Tugu yang syahdu
-Membawa rindu yang tak kunjung padam
-
-[Chorus]
-Jogjakarta, kota sejuta cerita
-Tempat hati ini selalu tertinggal
-Dalam ramahnya senyuman wargamu
-Kukan kembali, ke sudut kotamu
-
-[Verse 2]
-Kopi jos hangat di angkringan malam
-Canda tawa mengalir tanpa beban
-Gamelan sayup terdengar di kejauhan
-Menjaga damai dalam keheningan`;
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
-        displayGeneratedLyrics(dummyLyrics);
-        showToast('Lyrics generated! (Demo Mode)', 'success');
+        let lyrics = '';
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            const result = await response.json();
+            console.log('Lyrics generation JSON result:', result);
+            if (result && typeof result === 'object') {
+                lyrics = result.output || result.lyrics || result.text || result.content || JSON.stringify(result);
+            } else if (typeof result === 'string') {
+                lyrics = result;
+            }
+        } else {
+            lyrics = await response.text();
+            console.log('Lyrics generation text result:', lyrics);
+        }
+        
+        if (!lyrics) {
+            throw new Error('No lyrics returned from the API');
+        }
+        
+        displayGeneratedLyrics(lyrics);
+        showToast('Lyrics generated successfully!', 'success');
     } catch (error) {
         console.error('Lyrics generation error:', error);
-        showToast('Failed to generate lyrics. Please try again.', 'error');
+        showToast('Failed to generate lyrics: ' + error.message, 'error');
     } finally {
         state.music.isGeneratingLyrics = false;
         setButtonLoading(elements.generateLyricsBtn, false);
@@ -606,18 +625,60 @@ async function generateMusic() {
         return;
     }
     
+    if (!state.settings.musicWebhook) {
+        showToast('Please configure the music webhook URL in settings', 'warning');
+        openSettings();
+        return;
+    }
+    
     state.music.lyrics = lyrics;
     state.music.isGeneratingMusic = true;
     setButtonLoading(elements.generateMusicBtn, true);
     
     try {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        const response = await fetchWithTimeout(state.settings.musicWebhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                lyrics: state.music.lyrics,
+                genre: state.music.genre,
+                mood: state.music.mood,
+                voice: state.music.voice,
+                duration: state.music.duration
+            })
+        });
         
-        const audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
-        const imageUrl = "https://conextlab.net/assets/conextlab-logo-rounded-BcrUS9UU.png";
-        const title = "Jogjakarta Rhapsody";
-        const tags = "pop, melancholic, acoustic, jogja";
-        const duration = 180;
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const result = await response.json();
+        console.log('Music generation result:', result);
+        
+        let song = null;
+        if (result.data?.response?.sunoData && result.data.response.sunoData.length > 0) {
+            song = result.data.response.sunoData[0];
+        } else if (result.response?.sunoData && result.response.sunoData.length > 0) {
+            song = result.response.sunoData[0];
+        } else if (result.sunoData && result.sunoData.length > 0) {
+            song = result.sunoData[0];
+        } else if (Array.isArray(result) && result.length > 0) {
+            song = result[0];
+        } else if (result && (result.audioUrl || result.audio_url)) {
+            song = result;
+        }
+        
+        if (!song) {
+            throw new Error('No song details found in the response');
+        }
+        
+        const audioUrl = song.audioUrl || song.audio_url || song.streamAudioUrl || song.stream_audio_url;
+        if (!audioUrl) {
+            throw new Error('No audio URL found in the song details');
+        }
+        
+        const imageUrl = song.imageUrl || song.image_url || song.avatarUrl || song.avatar_url || "https://conextlab.net/assets/conextlab-logo-rounded-BcrUS9UU.png";
+        const title = song.title || "Untitled AI Song";
+        const tags = `${state.music.genre}, ${state.music.mood}`;
+        const duration = song.duration || state.music.duration;
         
         state.music.audioUrl = audioUrl;
         state.music.imageUrl = imageUrl;
@@ -625,11 +686,11 @@ async function generateMusic() {
         state.music.tags = tags;
         
         displayGeneratedMusic(audioUrl, { imageUrl, title, tags, duration });
-        showToast('Music generated successfully! (Demo Mode)', 'success');
+        showToast('Music generated successfully!', 'success');
         
     } catch (error) {
         console.error('Music generation error:', error);
-        showToast('Failed to generate music. Please try again.', 'error');
+        showToast('Failed to generate music: ' + error.message, 'error');
     } finally {
         state.music.isGeneratingMusic = false;
         setButtonLoading(elements.generateMusicBtn, false);
