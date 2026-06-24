@@ -80,7 +80,6 @@ const elements = {
     stepBadges: document.querySelectorAll('.step-badge'),
     
     // Music Generator - Music
-    voiceButtons: document.querySelectorAll('.voice-btn'),
     musicDuration: document.getElementById('musicDuration'),
     durationValue: document.getElementById('durationValue'),
     generateMusicBtn: document.getElementById('generateMusicBtn'),
@@ -151,11 +150,7 @@ function setupEventListeners() {
         btn.addEventListener('click', () => selectRatio(btn));
     });
     
-    // Voice Buttons
-    elements.voiceButtons.forEach(btn => {
-        btn.addEventListener('click', () => selectVoice(btn));
-    });
-    
+
     // Duration Slider (Music)
     elements.musicDuration.addEventListener('input', (e) => {
         state.music.duration = parseInt(e.target.value);
@@ -263,12 +258,7 @@ function selectVideoRatio(selectedBtn) {
     selectedBtn.classList.add('active');
     state.video.ratio = selectedBtn.dataset.videoRatio;
 }
-// ===== Voice Selection =====
-function selectVoice(selectedBtn) {
-    elements.voiceButtons.forEach(btn => btn.classList.remove('active'));
-    selectedBtn.classList.add('active');
-    state.music.voice = selectedBtn.dataset.voice;
-}
+
 // ===== Video Duration Selection =====
 function selectVideoDuration(selectedBtn) {
     elements.videoDurationButtons.forEach(btn => btn.classList.remove('active'));
