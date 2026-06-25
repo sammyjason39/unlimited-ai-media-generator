@@ -625,35 +625,19 @@ async function generateMusic() {
         
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
-        const result = await response.json();
-        console.log('Music generation result:', result);
+        // Read response as ArrayBuffer (raw binary audio data)
+        const arrayBuffer = await response.arrayBuffer();
+        console.log('Received', arrayBuffer.byteLength, 'bytes');
         
-        let song = null;
-        if (result.data?.response?.sunoData && result.data.response.sunoData.length > 0) {
-            song = result.data.response.sunoData[0];
-        } else if (result.response?.sunoData && result.response.sunoData.length > 0) {
-            song = result.response.sunoData[0];
-        } else if (result.sunoData && result.sunoData.length > 0) {
-            song = result.sunoData[0];
-        } else if (Array.isArray(result) && result.length > 0) {
-            song = result[0];
-        } else if (result && (result.audioUrl || result.audio_url)) {
-            song = result;
-        }
+        // Create audio blob and URL
+        const audioBlob = new Blob([arrayBuffer], { type: 'audio/mp3' });
+        state.music.audioBlob = audioBlob;
+        const audioUrl = URL.createObjectURL(audioBlob);
         
-        if (!song) {
-            throw new Error('No song details found in the response');
-        }
-        
-        const audioUrl = song.audioUrl || song.audio_url || song.streamAudioUrl || song.stream_audio_url;
-        if (!audioUrl) {
-            throw new Error('No audio URL found in the song details');
-        }
-        
-        const imageUrl = song.imageUrl || song.image_url || song.avatarUrl || song.avatar_url || "https://conextlab.net/assets/conextlab-logo-rounded-BcrUS9UU.png";
-        const title = song.title || "Untitled AI Song";
+        const imageUrl = "https://conextlab.net/assets/conextlab-logo-rounded-BcrUS9UU.png";
+        const title = "Untitled AI Song";
         const tags = `${state.music.genre}, ${state.music.mood}`;
-        const duration = song.duration || state.music.duration;
+        const duration = state.music.duration;
         
         state.music.audioUrl = audioUrl;
         state.music.imageUrl = imageUrl;
