@@ -296,9 +296,7 @@ async function generateImage() {
         return;
     }
     
-    const isDummyPrompt = prompt.toLowerCase().includes("asian woman") && prompt.toLowerCase().includes("brown coat");
-    
-    if (!isDummyPrompt && !state.settings.imageWebhook) {
+    if (!state.settings.imageWebhook) {
         showToast('Please configure the image webhook URL in settings', 'warning');
         openSettings();
         return;
@@ -309,12 +307,6 @@ async function generateImage() {
     setButtonLoading(elements.generateImageBtn, true);
     
     try {
-        if (isDummyPrompt) {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            displayGeneratedImage('hf_20260609_085057_b23cd948-711c-477f-ad2c-6c9f25c6bc97.png');
-            showToast('Image generated successfully! (Demo Mode)', 'success');
-            return;
-        }
         // Map ratio to width and height
         const ratioToSize = {
             '1:1': { width: 1024, height: 1024 },
@@ -329,6 +321,7 @@ async function generateImage() {
             body: JSON.stringify({
                 prompt: state.image.prompt,
                 style: state.image.style,
+                ratio: state.image.ratio,
                 width: size.width,
                 height: size.height
             })
@@ -340,22 +333,13 @@ async function generateImage() {
         const arrayBuffer = await response.arrayBuffer();
         console.log('Received', arrayBuffer.byteLength, 'bytes');
         
-        // Convert ArrayBuffer to base64
-        const bytes = new Uint8Array(arrayBuffer);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        const base64Data = btoa(binary);
-        
-        console.log('Base64 length:', base64Data.length);
-        console.log('Base64 preview:', base64Data.substring(0, 50));
-        
-        // Create data URL
-        const dataUrl = `data:image/png;base64,${base64Data}`;
+        // Create image blob and URL
+        const imageBlob = new Blob([arrayBuffer], { type: 'image/png' });
+        state.image.generatedBlob = imageBlob;
+        const imageUrl = URL.createObjectURL(imageBlob);
         
         // Display the image
-        displayGeneratedImage(dataUrl);
+        displayGeneratedImage(imageUrl);
         showToast('Image generated successfully!', 'success');
         
     } catch (error) {
@@ -448,6 +432,7 @@ async function generateVideo() {
             body: JSON.stringify({
                 prompt: state.video.prompt,
                 style: state.video.style,
+                ratio: state.video.ratio,
                 width: size.width,
                 height: size.height,
                 duration: state.video.duration
